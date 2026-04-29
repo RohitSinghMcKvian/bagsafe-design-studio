@@ -65,9 +65,9 @@ function WelcomeGreeting() {
   const firstName = rawName.split(" ")[0];
 
   return (
-    <div className="mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-2.5 backdrop-blur-md">
-      <Hand className="h-4 w-4 shrink-0 text-amber" />
-      <p className="truncate text-sm font-medium text-ink-foreground sm:text-base">
+    <div className="mb-6 flex max-w-full items-start gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-md sm:inline-flex sm:items-center sm:rounded-full sm:px-5">
+      <Hand className="mt-0.5 h-4 w-4 shrink-0 text-amber sm:mt-0" />
+      <p className="text-sm font-medium leading-snug text-ink-foreground sm:text-base">
         Welcome back, <span className="font-semibold text-amber">{firstName}</span> — your bags, our mission.
       </p>
     </div>
