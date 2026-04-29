@@ -116,7 +116,7 @@ export function ChatBot() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open chat assistant"
-          className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-elegant transition-transform hover:scale-105 active:scale-95 md:bottom-6 md:right-24"
+          className="fixed bottom-4 right-4 z-50 inline-flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground shadow-elegant transition-transform hover:scale-105 active:scale-95 sm:h-auto sm:w-auto sm:px-4 sm:py-3 sm:text-sm sm:font-semibold md:bottom-6 md:right-44"
         >
           <MessageSquare className="h-5 w-5" strokeWidth={2.4} />
           <span className="hidden sm:inline">Ask BagSafe</span>
@@ -124,7 +124,7 @@ export function ChatBot() {
       )}
 
       {open && (
-        <div className="fixed bottom-5 right-5 z-50 flex h-[min(70vh,560px)] w-[min(92vw,380px)] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-elegant md:bottom-6 md:right-6">
+        <div className="fixed bottom-4 right-4 left-4 z-50 flex h-[min(70vh,560px)] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-elegant sm:left-auto sm:w-[min(92vw,380px)] md:bottom-6 md:right-6">
           <header className="flex items-center justify-between border-b border-border bg-primary px-4 py-3 text-primary-foreground">
             <div className="flex items-center gap-2">
               <div className="grid h-8 w-8 place-items-center rounded-full bg-primary-foreground/15">
