@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ShieldCheck, Clock, MapPin, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Clock, MapPin, Sparkles, Hand } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAuth } from "@/lib/auth";
 import { SavingsCalculator } from "@/components/site/SavingsCalculator";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,25 @@ function HomePage() {
   );
 }
 
+function WelcomeGreeting() {
+  const { user, loading, isAdmin, isVendor } = useAuth();
+  if (loading || !user) return null;
+  if (isAdmin || isVendor) return null;
+
+  const meta = (user.user_metadata ?? {}) as { full_name?: string; name?: string };
+  const rawName = meta.full_name || meta.name || user.email?.split("@")[0] || "Traveler";
+  const firstName = rawName.split(" ")[0];
+
+  return (
+    <div className="mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-2.5 backdrop-blur-md">
+      <Hand className="h-4 w-4 shrink-0 text-amber" />
+      <p className="truncate text-sm font-medium text-ink-foreground sm:text-base">
+        Welcome back, <span className="font-semibold text-amber">{firstName}</span> — your bags, our mission.
+      </p>
+    </div>
+  );
+}
+
 function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-ink text-ink-foreground">
@@ -71,6 +91,7 @@ function Hero() {
 
       <div className="container-page relative pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
         <div className="max-w-3xl animate-rise">
+          <WelcomeGreeting />
           <span className="inline-flex items-center gap-2 rounded-full border border-amber/40 bg-amber/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-amber">
             <Sparkles className="h-3.5 w-3.5" />
             Excess baggage, zero stress
