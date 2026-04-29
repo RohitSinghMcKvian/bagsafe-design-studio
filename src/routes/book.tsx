@@ -22,6 +22,8 @@ import {
   type RouteType,
 } from "@/lib/pricing";
 import { whatsappLink } from "@/lib/contact";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -153,9 +155,11 @@ function BookPage() {
 }
 
 function BookingForm() {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [values, setValues] = useState<BookingValues>(initialValues);
-  const [confirmed, setConfirmed] = useState<{ id: string } | null>(null);
+  const [confirmed, setConfirmed] = useState<{ id: string; saved: boolean } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const quote = useMemo(
     () => bagsafeCharge(values.routeType, values.totalWeight),
@@ -197,14 +201,50 @@ function BookingForm() {
     setStep((s) => Math.max(1, s - 1));
   }
 
-  function submit() {
+  async function submit() {
     const parsed = bookingSchema.safeParse(values);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
       return;
     }
-    const id = `BAG-${Date.now().toString(36).toUpperCase().slice(-6)}`;
-    setConfirmed({ id });
+    setSubmitting(true);
+    let id = `BAG-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+    let saved = false;
+
+    if (user) {
+      const { data, error } = await supabase
+        .from("orders")
+        .insert({
+          customer_id: user.id,
+          full_name: values.fullName,
+          phone: values.phone,
+          airline: AIRLINES.find((a) => a.id === values.airlineId)?.name ?? values.airlineId,
+          flight_number: values.flightNumber,
+          travel_date: values.travelDate,
+          route_type: values.routeType,
+          pickup_address: values.pickupAddress,
+          pickup_slot: values.pickupSlot,
+          delivery_address: values.deliveryAddress,
+          recipient_name: values.recipientName,
+          recipient_phone: values.recipientPhone,
+          bag_count: values.bagCount,
+          weight_kg: values.totalWeight,
+          contents_note: values.contents,
+          estimated_price: quote,
+          status: "scheduled",
+        })
+        .select("id")
+        .single();
+      if (error) {
+        toast.error("Couldn't save to your account, but you can still send via WhatsApp.");
+      } else if (data) {
+        id = data.id.slice(0, 8).toUpperCase();
+        saved = true;
+      }
+    }
+
+    setSubmitting(false);
+    setConfirmed({ id, saved });
 
     const summary =
       `New BagSafe booking — ${id}\n\n` +
@@ -219,11 +259,21 @@ function BookingForm() {
   }
 
   if (confirmed) {
-    return <Confirmation id={confirmed.id} quote={quote} />;
+    return <Confirmation id={confirmed.id} quote={quote} saved={confirmed.saved} />;
   }
 
   return (
     <div className="rounded-3xl border border-border bg-card p-6 shadow-elegant md:p-10">
+      {!user && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber/30 bg-amber/10 p-4 text-sm">
+          <span>
+            <b>Tip:</b> Login to save this booking to your account and track shipments.
+          </span>
+          <Button asChild size="sm" variant="outline" className="rounded-full">
+            <Link to="/auth" search={{ redirect: "/book", mode: "login" }}>Login</Link>
+          </Button>
+        </div>
+      )}
       <Stepper step={step} />
 
       <div className="mt-8">
@@ -239,7 +289,7 @@ function BookingForm() {
           type="button"
           variant="ghost"
           onClick={back}
-          disabled={step === 1}
+          disabled={step === 1 || submitting}
           className="rounded-full"
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
@@ -258,9 +308,10 @@ function BookingForm() {
           <Button
             type="button"
             onClick={submit}
+            disabled={submitting}
             className="rounded-full bg-amber text-amber-foreground hover:bg-amber/90"
           >
-            Confirm booking
+            {submitting ? "Saving..." : "Confirm booking"}
             <Check className="ml-1 h-4 w-4" />
           </Button>
         )}
@@ -628,7 +679,7 @@ function ReviewBlock({
   );
 }
 
-function Confirmation({ id, quote }: { id: string; quote: number }) {
+function Confirmation({ id, quote, saved }: { id: string; quote: number; saved: boolean }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-8 text-center shadow-elegant md:p-12">
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gradient-amber text-amber-foreground">
@@ -640,8 +691,9 @@ function Confirmation({ id, quote }: { id: string; quote: number }) {
       <p className="mt-3 text-muted-foreground">
         Your booking reference is{" "}
         <span className="font-mono font-semibold text-foreground">{id}</span>.
-        We've opened a WhatsApp chat with your details — please send it so our
-        concierge can confirm your slot.
+        {saved
+          ? " We've saved it to your account and opened WhatsApp with your details for our concierge to confirm."
+          : " We've opened a WhatsApp chat with your details — please send it so our concierge can confirm your slot."}
       </p>
       <div className="mt-6 inline-flex items-baseline gap-2 rounded-full bg-primary/10 px-5 py-2 text-primary">
         <span className="text-xs font-semibold uppercase tracking-[0.16em]">
@@ -652,9 +704,18 @@ function Confirmation({ id, quote }: { id: string; quote: number }) {
         </span>
       </div>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
+        {saved && (
+          <Button
+            asChild
+            className="rounded-full bg-amber text-amber-foreground hover:bg-amber/90"
+          >
+            <Link to="/account">View my orders</Link>
+          </Button>
+        )}
         <Button
           asChild
-          className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+          variant={saved ? "outline" : "default"}
+          className={saved ? "rounded-full" : "rounded-full bg-primary text-primary-foreground hover:bg-primary/90"}
         >
           <Link to="/">Back to home</Link>
         </Button>
