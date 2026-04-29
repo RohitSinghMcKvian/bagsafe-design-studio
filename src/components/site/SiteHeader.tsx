@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -14,6 +15,7 @@ const NAV = [
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { user, isVendor, isAdmin } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -21,6 +23,8 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const accountHref = isAdmin ? "/admin" : isVendor ? "/vendor" : "/account";
 
   return (
     <header
@@ -55,7 +59,27 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-2 md:flex">
+          {user ? (
+            <Button
+              asChild
+              variant="ghost"
+              className={`rounded-full ${scrolled ? "" : "text-ink-foreground hover:bg-white/10 hover:text-ink-foreground"}`}
+            >
+              <Link to={accountHref}>
+                <User className="mr-1 h-4 w-4" />
+                {isAdmin ? "Admin" : isVendor ? "Vendor" : "Account"}
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              asChild
+              variant="ghost"
+              className={`rounded-full ${scrolled ? "" : "text-ink-foreground hover:bg-white/10 hover:text-ink-foreground"}`}
+            >
+              <Link to="/auth" search={{ mode: "login" }}>Login</Link>
+            </Button>
+          )}
           <Button
             asChild
             className="rounded-full bg-amber text-amber-foreground hover:bg-amber/90"
@@ -94,6 +118,24 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            {user ? (
+              <Link
+                to={accountHref}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-accent"
+              >
+                {isAdmin ? "Admin dashboard" : isVendor ? "Vendor dashboard" : "My account"}
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                search={{ mode: "login" }}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-accent"
+              >
+                Login / Sign up
+              </Link>
+            )}
             <Button
               asChild
               className="mt-2 rounded-full bg-amber text-amber-foreground hover:bg-amber/90"
