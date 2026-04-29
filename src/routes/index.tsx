@@ -55,6 +55,25 @@ function HomePage() {
   );
 }
 
+function WelcomeGreeting() {
+  const { user, loading, isAdmin, isVendor } = useAuth();
+  if (loading || !user) return null;
+  if (isAdmin || isVendor) return null;
+
+  const meta = (user.user_metadata ?? {}) as { full_name?: string; name?: string };
+  const rawName = meta.full_name || meta.name || user.email?.split("@")[0] || "Traveler";
+  const firstName = rawName.split(" ")[0];
+
+  return (
+    <div className="mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 py-2.5 backdrop-blur-md">
+      <Hand className="h-4 w-4 shrink-0 text-amber" />
+      <p className="truncate text-sm font-medium text-ink-foreground sm:text-base">
+        Welcome back, <span className="font-semibold text-amber">{firstName}</span> — your bags, our mission.
+      </p>
+    </div>
+  );
+}
+
 function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-ink text-ink-foreground">
