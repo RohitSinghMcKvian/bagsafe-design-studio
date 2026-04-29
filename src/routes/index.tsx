@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ShieldCheck, Clock, MapPin, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Clock, MapPin, Sparkles, Hand } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAuth } from "@/lib/auth";
 import { SavingsCalculator } from "@/components/site/SavingsCalculator";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { Button } from "@/components/ui/button";
