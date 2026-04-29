@@ -72,6 +72,7 @@ function Hero() {
 
       <div className="container-page relative pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
         <div className="max-w-3xl animate-rise">
+          <WelcomeGreeting />
           <span className="inline-flex items-center gap-2 rounded-full border border-amber/40 bg-amber/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-amber">
             <Sparkles className="h-3.5 w-3.5" />
             Excess baggage, zero stress
