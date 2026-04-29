@@ -53,7 +53,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate({ to: search.redirect ?? "/account" });
+      navigate({ to: search.redirect ?? "/" });
     }
   }, [user, loading, navigate, search.redirect]);
 
