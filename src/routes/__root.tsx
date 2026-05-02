@@ -51,7 +51,7 @@ export const Route = createRootRoute({
           "BagSafe picks up your overweight luggage and delivers it to your doorstep — anywhere in India and abroad. Skip airline excess fees and travel light.",
       },
       { name: "author", content: "BagSafe" },
-      { name: "theme-color", content: "#1a1340" },
+      { name: "theme-color", content: "#5B5CEB" },
       { property: "og:title", content: "BagSafe — Travel Light. Save Big." },
       {
         property: "og:description",
@@ -72,7 +72,7 @@ export const Route = createRootRoute({
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap",
       },
     ],
   }),
