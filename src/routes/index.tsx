@@ -66,9 +66,9 @@ function WelcomeGreeting() {
 
   return (
     <div className="mb-6 flex max-w-full items-start gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-md sm:inline-flex sm:items-center sm:rounded-full sm:px-5">
-      <Hand className="mt-0.5 h-4 w-4 shrink-0 text-amber sm:mt-0" />
+      <Hand className="mt-0.5 h-4 w-4 shrink-0 text-primary sm:mt-0" />
       <p className="text-sm font-medium leading-snug text-ink-foreground sm:text-base">
-        Welcome back, <span className="font-semibold text-amber">{firstName}</span> — your bags, our mission.
+        Welcome back, <span className="font-semibold text-primary">{firstName}</span> — your bags, our mission.
       </p>
     </div>
   );
@@ -83,25 +83,25 @@ function Hero() {
           alt="Airplane on a runway at sunset"
           width={1920}
           height={1280}
-          className="h-full w-full object-cover opacity-55"
+          className="h-full w-full object-cover opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/55 to-ink" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/88 via-ink/72 to-ink" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/72 to-primary/25" />
       </div>
 
       <div className="container-page relative pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
         <div className="max-w-3xl animate-rise">
           <WelcomeGreeting />
-          <span className="inline-flex items-center gap-2 rounded-full border border-amber/40 bg-amber/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-amber">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
             <Sparkles className="h-3.5 w-3.5" />
             Excess baggage, zero stress
           </span>
           <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
             Travel light.
             <br />
-            <span className="italic text-amber">Save big</span> on excess baggage.
+            <span className="text-primary">Save big</span> on excess baggage.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-foreground/80 md:text-xl">
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-foreground/78 md:text-xl">
             BagSafe picks up your overweight luggage from your doorstep, ships it
             ahead of you, and delivers it to your destination — for a fraction of
             airline excess fees.
