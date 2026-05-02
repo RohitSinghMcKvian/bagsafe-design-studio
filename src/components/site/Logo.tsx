@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Plane } from "lucide-react";
+import logoUrl from "@/assets/bagsafe-logo.png";
 
 export function Logo({
   variant = "light",
@@ -8,22 +8,19 @@ export function Logo({
   variant?: "light" | "dark";
   className?: string;
 }) {
-  const colorClass = variant === "dark" ? "text-foreground" : "text-ink-foreground";
   return (
     <Link
       to="/"
       aria-label="BagSafe — Home"
-      className={`group inline-flex items-center gap-2 ${colorClass} ${className}`}
+      className={`group inline-flex items-center ${className}`}
     >
-      <span
-        className="grid h-9 w-9 place-items-center rounded-full bg-gradient-amber shadow-elegant transition-transform group-hover:rotate-6"
-        aria-hidden
-      >
-        <Plane className="h-4 w-4 text-ink" strokeWidth={2.5} />
-      </span>
-      <span className="font-display text-2xl font-semibold tracking-tight">
-        Bag<span className="text-amber">Safe</span>
-      </span>
+      <img
+        src={logoUrl}
+        alt="BagSafe"
+        className={`h-8 w-auto md:h-9 transition-transform group-hover:scale-105 ${
+          variant === "light" ? "brightness-0 invert" : ""
+        }`}
+      />
     </Link>
   );
 }
