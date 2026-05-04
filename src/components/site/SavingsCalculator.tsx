@@ -5,7 +5,10 @@ import {
   airlineExcessCharge,
   bagsafeCharge,
   formatINR,
-  type RouteType,
+  SERVICE_LABEL,
+  SERVICE_ETA,
+  BAGSAFE_HANDLING_FEE,
+  type ServiceType,
 } from "@/lib/pricing";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -19,25 +22,25 @@ import { Button } from "@/components/ui/button";
 import { TrendingDown, ArrowRight } from "lucide-react";
 
 export function SavingsCalculator({
-  defaultWeight = 25,
-  defaultRoute = "international" as RouteType,
+  defaultWeight = 10,
+  defaultService = "surface" as ServiceType,
   defaultAirlineId = "indigo",
   variant = "light",
 }: {
   defaultWeight?: number;
-  defaultRoute?: RouteType;
+  defaultService?: ServiceType;
   defaultAirlineId?: string;
   variant?: "light" | "dark";
 }) {
   const [weight, setWeight] = useState(defaultWeight);
-  const [route, setRoute] = useState<RouteType>(defaultRoute);
+  const [service, setService] = useState<ServiceType>(defaultService);
   const [airlineId, setAirlineId] = useState(defaultAirlineId);
 
   const airlineCharge = useMemo(
-    () => airlineExcessCharge(airlineId, route, weight),
-    [airlineId, route, weight],
+    () => airlineExcessCharge(airlineId, weight),
+    [airlineId, weight],
   );
-  const ourCharge = useMemo(() => bagsafeCharge(route, weight), [route, weight]);
+  const ourCharge = useMemo(() => bagsafeCharge(service, weight), [service, weight]);
   const savings = Math.max(0, airlineCharge - ourCharge);
 
   const isDark = variant === "dark";
@@ -66,6 +69,14 @@ export function SavingsCalculator({
           <h3 className="mt-3 font-display text-3xl font-semibold leading-tight md:text-4xl">
             See what you'd save with BagSafe
           </h3>
+          <p
+            className={`mt-2 text-sm ${
+              isDark ? "text-ink-foreground/60" : "text-muted-foreground"
+            }`}
+          >
+            Domestic deliveries across India. Includes a one-time {formatINR(BAGSAFE_HANDLING_FEE)}{" "}
+            handling, packaging &amp; pickup fee.
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -81,10 +92,10 @@ export function SavingsCalculator({
           </div>
           <Slider
             value={[weight]}
-            min={5}
+            min={1}
             max={50}
             step={1}
-            onValueChange={(v) => setWeight(v[0] ?? 5)}
+            onValueChange={(v) => setWeight(v[0] ?? 1)}
             aria-label="Total bag weight in kilograms"
           />
           <div
@@ -92,7 +103,7 @@ export function SavingsCalculator({
               isDark ? "text-ink-foreground/50" : "text-muted-foreground"
             }`}
           >
-            <span>5 kg</span>
+            <span>1 kg</span>
             <span>50 kg</span>
           </div>
         </div>
@@ -102,9 +113,9 @@ export function SavingsCalculator({
             <label
               className={`text-sm font-medium ${isDark ? "text-ink-foreground/80" : "text-foreground/80"}`}
             >
-              Route
+              Delivery speed
             </label>
-            <Select value={route} onValueChange={(v) => setRoute(v as RouteType)}>
+            <Select value={service} onValueChange={(v) => setService(v as ServiceType)}>
               <SelectTrigger
                 className={
                   isDark
@@ -115,8 +126,12 @@ export function SavingsCalculator({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="domestic">Domestic (within India)</SelectItem>
-                <SelectItem value="international">International</SelectItem>
+                <SelectItem value="surface">
+                  {SERVICE_LABEL.surface} · {SERVICE_ETA.surface}
+                </SelectItem>
+                <SelectItem value="urgent">
+                  {SERVICE_LABEL.urgent} · {SERVICE_ETA.urgent}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -169,8 +184,7 @@ export function SavingsCalculator({
             {formatINR(savings)}
           </div>
           <p className="mt-2 text-sm opacity-80">
-            on a {weight} kg {route === "domestic" ? "domestic" : "international"}{" "}
-            trip
+            on a {weight} kg {SERVICE_LABEL[service].toLowerCase()} booking
           </p>
         </div>
 

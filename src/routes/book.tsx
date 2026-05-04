@@ -19,7 +19,11 @@ import {
   AIRLINES,
   bagsafeCharge,
   formatINR,
-  type RouteType,
+  SERVICE_LABEL,
+  SERVICE_ETA,
+  BAGSAFE_HANDLING_FEE,
+  BAGSAFE_RATE,
+  type ServiceType,
 } from "@/lib/pricing";
 import { whatsappLink } from "@/lib/contact";
 import { useAuth } from "@/lib/auth";
@@ -54,7 +58,7 @@ const bookingSchema = z.object({
     .min(2, "Enter your flight number")
     .max(10, "Flight number is too long")
     .regex(/^[A-Za-z0-9 -]+$/, "Use letters and numbers only"),
-  routeType: z.enum(["domestic", "international"]),
+  serviceType: z.enum(["surface", "urgent"]),
   travelDate: z.string().min(1, "Pick a travel date"),
 
   // Pickup
@@ -105,7 +109,7 @@ type BookingValues = z.infer<typeof bookingSchema>;
 const initialValues: BookingValues = {
   airlineId: AIRLINES[0].id,
   flightNumber: "",
-  routeType: "domestic",
+  serviceType: "surface",
   travelDate: "",
   fullName: "",
   phone: "",
@@ -162,8 +166,8 @@ function BookingForm() {
   const [submitting, setSubmitting] = useState(false);
 
   const quote = useMemo(
-    () => bagsafeCharge(values.routeType, values.totalWeight),
-    [values.routeType, values.totalWeight],
+    () => bagsafeCharge(values.serviceType, values.totalWeight),
+    [values.serviceType, values.totalWeight],
   );
 
   function patch<K extends keyof BookingValues>(key: K, value: BookingValues[K]) {
@@ -172,7 +176,7 @@ function BookingForm() {
 
   function validateStep(): boolean {
     const fieldsByStep: Record<number, (keyof BookingValues)[]> = {
-      1: ["airlineId", "flightNumber", "routeType", "travelDate"],
+      1: ["airlineId", "flightNumber", "serviceType", "travelDate"],
       2: ["fullName", "phone", "email", "pickupAddress", "pickupSlot"],
       3: ["recipientName", "recipientPhone", "deliveryAddress"],
       4: ["bagCount", "totalWeight", "contents"],
@@ -221,7 +225,7 @@ function BookingForm() {
           airline: AIRLINES.find((a) => a.id === values.airlineId)?.name ?? values.airlineId,
           flight_number: values.flightNumber,
           travel_date: values.travelDate,
-          route_type: values.routeType,
+          route_type: values.serviceType,
           pickup_address: values.pickupAddress,
           pickup_slot: values.pickupSlot,
           delivery_address: values.deliveryAddress,
@@ -248,7 +252,7 @@ function BookingForm() {
 
     const summary =
       `New BagSafe booking — ${id}\n\n` +
-      `Trip: ${values.routeType.toUpperCase()} · ${values.flightNumber} · ${values.travelDate}\n` +
+      `Trip: ${values.serviceType.toUpperCase()} · ${values.flightNumber} · ${values.travelDate}\n` +
       `Airline: ${AIRLINES.find((a) => a.id === values.airlineId)?.name}\n\n` +
       `Pickup: ${values.fullName} · ${values.phone}\n${values.pickupAddress}\nSlot: ${values.pickupSlot}\n\n` +
       `Delivery: ${values.recipientName} · ${values.recipientPhone}\n${values.deliveryAddress}\n\n` +
@@ -367,17 +371,21 @@ function StepTrip({ values, patch }: { values: BookingValues; patch: Patch }) {
     <div className="grid gap-5 sm:grid-cols-2">
       <SectionTitle>Trip details</SectionTitle>
       <div>
-        <Label>Route</Label>
+        <Label>Delivery speed</Label>
         <Select
-          value={values.routeType}
-          onValueChange={(v) => patch("routeType", v as RouteType)}
+          value={values.serviceType}
+          onValueChange={(v) => patch("serviceType", v as ServiceType)}
         >
           <SelectTrigger className="mt-2">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="domestic">Domestic (within India)</SelectItem>
-            <SelectItem value="international">International</SelectItem>
+            <SelectItem value="surface">
+              {SERVICE_LABEL.surface} · {SERVICE_ETA.surface} · {formatINR(BAGSAFE_RATE.surface)}/kg
+            </SelectItem>
+            <SelectItem value="urgent">
+              {SERVICE_LABEL.urgent} · {SERVICE_ETA.urgent} · {formatINR(BAGSAFE_RATE.urgent)}/kg
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -614,7 +622,7 @@ function StepReview({ values, quote }: { values: BookingValues; quote: number })
       <SectionTitle>Review &amp; confirm</SectionTitle>
       <ReviewBlock title="Trip">
         <li>
-          <b>{values.routeType}</b> · {airline} · {values.flightNumber}
+          <b>{values.serviceType}</b> · {airline} · {values.flightNumber}
         </li>
         <li>Travel date: {values.travelDate}</li>
       </ReviewBlock>
