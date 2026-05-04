@@ -167,8 +167,23 @@ export function SavingsCalculator({
       {/* Result */}
       <div className={`flex flex-col justify-between gap-6 rounded-2xl p-6 ${cardBase}`}>
         <div className="grid grid-cols-2 gap-4">
-          <ResultCard label="Airline charges" value={airlineCharge} muted />
-          <ResultCard label="BagSafe charges" value={ourCharge} accent />
+          <ResultCard
+            label="Airline charges"
+            value={airlineCharge}
+            sublabel={(() => {
+              const a = AIRLINES.find((x) => x.id === airlineId) ?? AIRLINES[0];
+              return `${formatINR(a.excessFee)}/kg over ${a.allowance} kg free`;
+            })()}
+            muted
+          />
+          <ResultCard
+            label="BagSafe charges"
+            value={ourCharge}
+            sublabel={`${formatINR(BAGSAFE_HANDLING_FEE)} + ${formatINR(
+              service === "surface" ? 150 : 250,
+            )}/kg`}
+            accent
+          />
         </div>
 
         <div
@@ -206,11 +221,13 @@ export function SavingsCalculator({
 function ResultCard({
   label,
   value,
+  sublabel,
   muted = false,
   accent = false,
 }: {
   label: string;
   value: number;
+  sublabel?: string;
   muted?: boolean;
   accent?: boolean;
 }) {
@@ -236,6 +253,9 @@ function ResultCard({
       >
         {formatINR(value)}
       </div>
+      {sublabel && (
+        <div className="mt-1 text-[11px] opacity-60">{sublabel}</div>
+      )}
     </div>
   );
 }
