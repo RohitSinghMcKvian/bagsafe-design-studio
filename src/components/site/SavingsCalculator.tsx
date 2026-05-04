@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingDown, ArrowRight } from "lucide-react";
 
 export function SavingsCalculator({
-  defaultWeight = 10,
+  defaultWeight = 25,
   defaultService = "surface" as ServiceType,
   defaultAirlineId = "indigo",
   variant = "light",
