@@ -58,7 +58,7 @@ const bookingSchema = z.object({
     .min(2, "Enter your flight number")
     .max(10, "Flight number is too long")
     .regex(/^[A-Za-z0-9 -]+$/, "Use letters and numbers only"),
-  routeType: z.enum(["domestic", "international"]),
+  serviceType: z.enum(["surface", "urgent"]),
   travelDate: z.string().min(1, "Pick a travel date"),
 
   // Pickup
