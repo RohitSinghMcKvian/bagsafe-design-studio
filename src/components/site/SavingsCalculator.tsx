@@ -221,11 +221,13 @@ export function SavingsCalculator({
 function ResultCard({
   label,
   value,
+  sublabel,
   muted = false,
   accent = false,
 }: {
   label: string;
   value: number;
+  sublabel?: string;
   muted?: boolean;
   accent?: boolean;
 }) {
@@ -251,6 +253,9 @@ function ResultCard({
       >
         {formatINR(value)}
       </div>
+      {sublabel && (
+        <div className="mt-1 text-[11px] opacity-60">{sublabel}</div>
+      )}
     </div>
   );
 }
