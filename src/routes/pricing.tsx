@@ -97,7 +97,7 @@ function Tiers() {
         "Dedicated WhatsApp concierge",
         "Tamper-proof sealing & tags",
       ],
-      featured: true,
+      featured: false,
       service: "urgent" as const,
     },
   ];
