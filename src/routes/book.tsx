@@ -109,7 +109,7 @@ type BookingValues = z.infer<typeof bookingSchema>;
 const initialValues: BookingValues = {
   airlineId: AIRLINES[0].id,
   flightNumber: "",
-  serviceType: "domestic",
+  serviceType: "surface",
   travelDate: "",
   fullName: "",
   phone: "",
