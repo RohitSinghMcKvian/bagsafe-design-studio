@@ -82,7 +82,7 @@ function Tiers() {
         "₹50,000 insurance included",
         "Real-time WhatsApp tracking",
       ],
-      featured: false,
+      featured: true,
       service: "surface" as const,
     },
     {
@@ -97,7 +97,7 @@ function Tiers() {
         "Dedicated WhatsApp concierge",
         "Tamper-proof sealing & tags",
       ],
-      featured: true,
+      featured: false,
       service: "urgent" as const,
     },
   ];
