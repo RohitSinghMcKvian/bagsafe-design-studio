@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import {
   AIRLINES,
   BAGSAFE_RATE,
-  BAGSAFE_MIN_CHARGE,
+  BAGSAFE_HANDLING_FEE,
+  SERVICE_LABEL,
+  SERVICE_ETA,
+  bagsafeCharge,
   formatINR,
 } from "@/lib/pricing";
 
@@ -17,13 +20,13 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "Transparent per-kg pricing for doorstep luggage delivery. See how BagSafe compares to airline excess baggage fees.",
+          "Transparent per-kg pricing for doorstep luggage delivery across India. ₹150/kg surface, ₹250/kg urgent, plus a one-time ₹499 handling fee.",
       },
       { property: "og:title", content: "BagSafe Pricing — Flat per-kg, no surprises." },
       {
         property: "og:description",
         content:
-          "₹199/kg domestic, ₹499/kg international. See exactly what you save vs. airline excess fees.",
+          "₹150/kg surface, ₹250/kg urgent + ₹499 one-time handling. See exactly what you save vs. airline excess fees.",
       },
     ],
   }),
@@ -47,7 +50,7 @@ function PageHero() {
     <section className="bg-ink pt-32 pb-16 text-ink-foreground md:pt-40 md:pb-24">
       <div className="container-page">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">
-          Pricing
+          Pricing · Domestic
         </p>
         <h1 className="mt-4 max-w-3xl font-display text-5xl font-semibold leading-tight md:text-6xl lg:text-7xl">
           Flat per-kg rates.
@@ -55,8 +58,11 @@ function PageHero() {
           <span className="italic text-amber">No airport surprises.</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-ink-foreground/80">
-          Pay only for the weight you ship. Insurance, tracking, and door-to-door
-          handling are always included.
+          Pay only for the weight you ship — plus one flat {formatINR(BAGSAFE_HANDLING_FEE)}{" "}
+          handling, packaging &amp; pickup fee. Insurance and tracking included.
+        </p>
+        <p className="mt-3 max-w-2xl text-sm text-ink-foreground/60">
+          We currently serve domestic routes within India. International coming soon.
         </p>
       </div>
     </section>
@@ -66,48 +72,40 @@ function PageHero() {
 function Tiers() {
   const tiers = [
     {
-      name: "Domestic",
-      tag: "Within India",
-      rate: BAGSAFE_RATE.domestic,
+      name: SERVICE_LABEL.surface,
+      tag: "Most affordable",
+      rate: BAGSAFE_RATE.surface,
+      eta: SERVICE_ETA.surface,
       perks: [
         "Door-to-doorstep pickup & delivery",
-        "1–3 business days",
+        SERVICE_ETA.surface,
         "₹50,000 insurance included",
         "Real-time WhatsApp tracking",
       ],
       featured: false,
+      service: "surface" as const,
     },
     {
-      name: "International",
-      tag: "Across borders",
-      rate: BAGSAFE_RATE.international,
+      name: SERVICE_LABEL.urgent,
+      tag: "Fastest option",
+      rate: BAGSAFE_RATE.urgent,
+      eta: SERVICE_ETA.urgent,
       perks: [
-        "Customs documentation handled",
-        "3–7 business days",
+        "Priority pickup within 24 hours",
+        SERVICE_ETA.urgent,
         "₹50,000 insurance included",
         "Dedicated WhatsApp concierge",
         "Tamper-proof sealing & tags",
       ],
       featured: true,
-    },
-    {
-      name: "Same-city",
-      tag: "Hyperlocal",
-      rate: 99,
-      perks: [
-        "Same-day pickup & delivery",
-        "Flat rate up to 25 kg",
-        "Live courier tracking",
-        "Ideal for hotel ↔ home transfers",
-      ],
-      featured: false,
+      service: "urgent" as const,
     },
   ];
 
   return (
     <section className="bg-background py-20 md:py-24">
       <div className="container-page">
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
           {tiers.map((t) => (
             <div
               key={t.name}
@@ -145,7 +143,14 @@ function Tiers() {
               <p
                 className={`mt-1 text-xs ${t.featured ? "text-ink-foreground/60" : "text-muted-foreground"}`}
               >
-                Minimum {formatINR(BAGSAFE_MIN_CHARGE)} per booking
+                + {formatINR(BAGSAFE_HANDLING_FEE)} one-time handling, packaging &amp; pickup
+              </p>
+              <p
+                className={`mt-3 text-sm font-medium ${
+                  t.featured ? "text-ink-foreground/80" : "text-foreground/80"
+                }`}
+              >
+                Example: 3 kg = {formatINR(bagsafeCharge(t.service, 3))}
               </p>
 
               <ul className="mt-7 space-y-3">
@@ -187,7 +192,7 @@ function Tiers() {
 }
 
 function ComparisonTable() {
-  // Show airline excess fees vs BagSafe per kg for international.
+  // Show airline domestic excess fees vs BagSafe surface per kg.
   return (
     <section className="bg-cream py-20 md:py-24">
       <div className="container-page">
@@ -199,8 +204,8 @@ function ComparisonTable() {
             BagSafe vs. airline excess fees.
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Per-kg excess fees on international routes — compared to BagSafe's
-            flat {formatINR(BAGSAFE_RATE.international)}/kg.
+            Per-kg domestic excess fees — compared to BagSafe's flat{" "}
+            {formatINR(BAGSAFE_RATE.surface)}/kg surface rate.
           </p>
         </div>
 
@@ -216,14 +221,14 @@ function ComparisonTable() {
             </thead>
             <tbody className="divide-y divide-border">
               {AIRLINES.map((a) => {
-                const fee = a.excessFee.international;
-                const save = fee - BAGSAFE_RATE.international;
+                const fee = a.excessFee;
+                const save = fee - BAGSAFE_RATE.surface;
                 return (
                   <tr key={a.id} className="transition-colors hover:bg-muted/40">
                     <td className="px-5 py-4 font-semibold">{a.name}</td>
                     <td className="px-5 py-4 text-right">{formatINR(fee)}</td>
                     <td className="px-5 py-4 text-right">
-                      {formatINR(BAGSAFE_RATE.international)}
+                      {formatINR(BAGSAFE_RATE.surface)}
                     </td>
                     <td className="px-5 py-4 text-right font-semibold text-primary">
                       {formatINR(save)}
@@ -261,13 +266,13 @@ function Inclusions() {
     "Tamper-proof seals & tags",
     "WhatsApp customer support",
     "Door-to-door pickup & delivery",
-    "Customs documentation (international)",
+    "Packaging materials & labels",
   ];
   const notIncluded = [
     "Hazardous goods (batteries, fuels, chemicals)",
     "Cash, jewellery, important documents",
     "Perishables & fresh food",
-    "Liquids exceeding airline limits",
+    "International shipments (coming soon)",
   ];
 
   return (
