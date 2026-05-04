@@ -19,7 +19,11 @@ import {
   AIRLINES,
   bagsafeCharge,
   formatINR,
-  type RouteType,
+  SERVICE_LABEL,
+  SERVICE_ETA,
+  BAGSAFE_HANDLING_FEE,
+  BAGSAFE_RATE,
+  type ServiceType,
 } from "@/lib/pricing";
 import { whatsappLink } from "@/lib/contact";
 import { useAuth } from "@/lib/auth";
