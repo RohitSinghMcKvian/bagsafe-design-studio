@@ -109,7 +109,7 @@ type BookingValues = z.infer<typeof bookingSchema>;
 const initialValues: BookingValues = {
   airlineId: AIRLINES[0].id,
   flightNumber: "",
-  routeType: "domestic",
+  serviceType: "domestic",
   travelDate: "",
   fullName: "",
   phone: "",
@@ -166,8 +166,8 @@ function BookingForm() {
   const [submitting, setSubmitting] = useState(false);
 
   const quote = useMemo(
-    () => bagsafeCharge(values.routeType, values.totalWeight),
-    [values.routeType, values.totalWeight],
+    () => bagsafeCharge(values.serviceType, values.totalWeight),
+    [values.serviceType, values.totalWeight],
   );
 
   function patch<K extends keyof BookingValues>(key: K, value: BookingValues[K]) {
@@ -176,7 +176,7 @@ function BookingForm() {
 
   function validateStep(): boolean {
     const fieldsByStep: Record<number, (keyof BookingValues)[]> = {
-      1: ["airlineId", "flightNumber", "routeType", "travelDate"],
+      1: ["airlineId", "flightNumber", "serviceType", "travelDate"],
       2: ["fullName", "phone", "email", "pickupAddress", "pickupSlot"],
       3: ["recipientName", "recipientPhone", "deliveryAddress"],
       4: ["bagCount", "totalWeight", "contents"],
@@ -225,7 +225,7 @@ function BookingForm() {
           airline: AIRLINES.find((a) => a.id === values.airlineId)?.name ?? values.airlineId,
           flight_number: values.flightNumber,
           travel_date: values.travelDate,
-          route_type: values.routeType,
+          route_type: values.serviceType,
           pickup_address: values.pickupAddress,
           pickup_slot: values.pickupSlot,
           delivery_address: values.deliveryAddress,
@@ -252,7 +252,7 @@ function BookingForm() {
 
     const summary =
       `New BagSafe booking — ${id}\n\n` +
-      `Trip: ${values.routeType.toUpperCase()} · ${values.flightNumber} · ${values.travelDate}\n` +
+      `Trip: ${values.serviceType.toUpperCase()} · ${values.flightNumber} · ${values.travelDate}\n` +
       `Airline: ${AIRLINES.find((a) => a.id === values.airlineId)?.name}\n\n` +
       `Pickup: ${values.fullName} · ${values.phone}\n${values.pickupAddress}\nSlot: ${values.pickupSlot}\n\n` +
       `Delivery: ${values.recipientName} · ${values.recipientPhone}\n${values.deliveryAddress}\n\n` +
@@ -373,8 +373,8 @@ function StepTrip({ values, patch }: { values: BookingValues; patch: Patch }) {
       <div>
         <Label>Route</Label>
         <Select
-          value={values.routeType}
-          onValueChange={(v) => patch("routeType", v as RouteType)}
+          value={values.serviceType}
+          onValueChange={(v) => patch("serviceType", v as RouteType)}
         >
           <SelectTrigger className="mt-2">
             <SelectValue />
@@ -618,7 +618,7 @@ function StepReview({ values, quote }: { values: BookingValues; quote: number })
       <SectionTitle>Review &amp; confirm</SectionTitle>
       <ReviewBlock title="Trip">
         <li>
-          <b>{values.routeType}</b> · {airline} · {values.flightNumber}
+          <b>{values.serviceType}</b> · {airline} · {values.flightNumber}
         </li>
         <li>Travel date: {values.travelDate}</li>
       </ReviewBlock>
