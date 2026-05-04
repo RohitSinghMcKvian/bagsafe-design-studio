@@ -371,17 +371,21 @@ function StepTrip({ values, patch }: { values: BookingValues; patch: Patch }) {
     <div className="grid gap-5 sm:grid-cols-2">
       <SectionTitle>Trip details</SectionTitle>
       <div>
-        <Label>Route</Label>
+        <Label>Delivery speed</Label>
         <Select
           value={values.serviceType}
-          onValueChange={(v) => patch("serviceType", v as RouteType)}
+          onValueChange={(v) => patch("serviceType", v as ServiceType)}
         >
           <SelectTrigger className="mt-2">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="domestic">Domestic (within India)</SelectItem>
-            <SelectItem value="international">International</SelectItem>
+            <SelectItem value="surface">
+              {SERVICE_LABEL.surface} · {SERVICE_ETA.surface} · {formatINR(BAGSAFE_RATE.surface)}/kg
+            </SelectItem>
+            <SelectItem value="urgent">
+              {SERVICE_LABEL.urgent} · {SERVICE_ETA.urgent} · {formatINR(BAGSAFE_RATE.urgent)}/kg
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
