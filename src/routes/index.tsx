@@ -314,8 +314,8 @@ function FAQ() {
     { q: "How far in advance should I book?", a: "We recommend booking at least 48 hours before your flight. Same-day pickups are available in most metro cities, subject to courier availability." },
     { q: "What can I send through BagSafe?", a: "Personal clothing, accessories, gifts, electronics (declared), and most non-perishable items. Prohibited items include hazardous materials, liquids over airline limits, perishables, and currency." },
     { q: "Is my luggage insured?", a: "Yes. Every booking includes ₹50,000 of complimentary insurance. Higher coverage is available on request." },
-    { q: "How long does delivery take?", a: "Domestic deliveries take 1–3 business days. International shipments take 3–7 business days depending on the route and customs clearance." },
-    { q: "Do you handle customs for international shipments?", a: "Yes — we coordinate documentation and brokerage. You'll be notified of any duties or taxes payable at destination." },
+    { q: "How long does delivery take?", a: "Surface delivery takes 3–6 business days across India. Need it faster? Urgent delivery arrives in 1–2 business days." },
+    { q: "How is the price calculated?", a: "It's simple: ₹150/kg for surface or ₹250/kg for urgent, plus a one-time ₹499 handling, packaging & pickup charge. So 3 kg surface works out to ₹499 + ₹450 = ₹949." },
   ];
 
   return (
