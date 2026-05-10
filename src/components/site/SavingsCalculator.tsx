@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   AIRLINES,
@@ -20,6 +20,35 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TrendingDown, ArrowRight } from "lucide-react";
+
+function AnimatedSavings({ value }: { value: number }) {
+  const [display, setDisplay] = useState(value);
+  const prevValue = useRef(value);
+
+  useEffect(() => {
+    if (value === prevValue.current) return;
+    const start = prevValue.current;
+    const diff = value - start;
+    const duration = 500;
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(start + diff * eased));
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        prevValue.current = value;
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [value]);
+
+  return <>{formatINR(display)}</>;
+}
 
 export function SavingsCalculator({
   defaultWeight = 25,
@@ -44,50 +73,46 @@ export function SavingsCalculator({
   const savings = Math.max(0, airlineCharge - ourCharge);
 
   const isDark = variant === "dark";
-  const cardBase = isDark
-    ? "bg-white/5 border border-white/10 text-ink-foreground"
-    : "bg-card border border-border text-foreground";
 
   return (
     <div
-      className={`grid gap-6 rounded-3xl p-6 md:p-10 lg:grid-cols-[1.1fr_1fr] ${
+      className={`grid gap-4 rounded-2xl p-4 lg:grid-cols-[1.15fr_1fr] ${
         isDark
-          ? "bg-ink text-ink-foreground"
-          : "bg-card text-foreground shadow-elegant"
+          ? "bg-white/[0.06] backdrop-blur-xl border border-white/[0.12] text-ink-foreground"
+          : "bg-card border border-border text-foreground shadow-elegant"
       }`}
     >
       {/* Controls */}
-      <div className="space-y-7">
+      <div className="space-y-3">
         <div>
           <p
-            className={`text-xs font-semibold uppercase tracking-[0.18em] ${
+            className={`text-[10px] font-semibold uppercase tracking-widest ${
               isDark ? "text-amber" : "text-primary"
             }`}
           >
             Savings calculator
           </p>
-          <h3 className="mt-3 font-display text-3xl font-semibold leading-tight md:text-4xl">
-            See what you'd save with BagSafe
+          <h3 className="mt-1 font-display text-lg font-semibold leading-tight md:text-xl">
+            See what you'd save
           </h3>
           <p
-            className={`mt-2 text-sm ${
-              isDark ? "text-ink-foreground/60" : "text-muted-foreground"
+            className={`mt-1 line-clamp-1 text-[11px] ${
+              isDark ? "text-ink-foreground/40" : "text-muted-foreground"
             }`}
           >
-            Domestic deliveries across India. Includes a one-time {formatINR(BAGSAFE_HANDLING_FEE)}{" "}
-            handling, packaging &amp; pickup fee.
+            Domestic · {formatINR(BAGSAFE_HANDLING_FEE)} handling & pickup fee
           </p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex items-end justify-between">
-            <label
-              className={`text-sm font-medium ${isDark ? "text-ink-foreground/80" : "text-foreground/80"}`}
+            <span
+              className={`text-[10px] font-medium ${isDark ? "text-ink-foreground/70" : "text-foreground/70"}`}
             >
-              Total bag weight
-            </label>
-            <span className="font-display text-2xl font-semibold">
-              {weight} <span className="text-base font-normal opacity-70">kg</span>
+              Bag weight
+            </span>
+            <span className="font-display text-base font-semibold">
+              {weight} <span className="text-xs font-normal opacity-50">kg</span>
             </span>
           </div>
           <Slider
@@ -99,62 +124,62 @@ export function SavingsCalculator({
             aria-label="Total bag weight in kilograms"
           />
           <div
-            className={`flex justify-between text-xs ${
-              isDark ? "text-ink-foreground/50" : "text-muted-foreground"
+            className={`flex justify-between text-[10px] ${
+              isDark ? "text-ink-foreground/40" : "text-muted-foreground"
             }`}
           >
-            <span>1 kg</span>
-            <span>50 kg</span>
+            <span>1kg</span>
+            <span>50kg</span>
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
             <label
-              className={`text-sm font-medium ${isDark ? "text-ink-foreground/80" : "text-foreground/80"}`}
+              className={`text-[10px] font-medium ${isDark ? "text-ink-foreground/70" : "text-foreground/70"}`}
             >
-              Delivery speed
+              Speed
             </label>
             <Select value={service} onValueChange={(v) => setService(v as ServiceType)}>
               <SelectTrigger
-                className={
+                className={`h-8 text-xs ${
                   isDark
-                    ? "border-white/15 bg-white/5 text-ink-foreground"
+                    ? "border-white/15 bg-white/[0.06] text-ink-foreground"
                     : ""
-                }
+                }`}
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="surface">
-                  {SERVICE_LABEL.surface} · {SERVICE_ETA.surface}
+                <SelectItem value="surface" className="text-xs">
+                  {SERVICE_LABEL.surface}
                 </SelectItem>
-                <SelectItem value="urgent">
-                  {SERVICE_LABEL.urgent} · {SERVICE_ETA.urgent}
+                <SelectItem value="urgent" className="text-xs">
+                  {SERVICE_LABEL.urgent}
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label
-              className={`text-sm font-medium ${isDark ? "text-ink-foreground/80" : "text-foreground/80"}`}
+              className={`text-[10px] font-medium ${isDark ? "text-ink-foreground/70" : "text-foreground/70"}`}
             >
-              Your airline
+              Airline
             </label>
             <Select value={airlineId} onValueChange={setAirlineId}>
               <SelectTrigger
-                className={
+                className={`h-8 text-xs ${
                   isDark
-                    ? "border-white/15 bg-white/5 text-ink-foreground"
+                    ? "border-white/15 bg-white/[0.06] text-ink-foreground"
                     : ""
-                }
+                }`}
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {AIRLINES.map((a) => (
-                  <SelectItem key={a.id} value={a.id}>
+                  <SelectItem key={a.id} value={a.id} className="text-xs">
                     {a.name}
                   </SelectItem>
                 ))}
@@ -165,52 +190,70 @@ export function SavingsCalculator({
       </div>
 
       {/* Result */}
-      <div className={`flex flex-col justify-between gap-6 rounded-2xl p-6 ${cardBase}`}>
-        <div className="grid grid-cols-2 gap-4">
+      <div
+        className={`flex flex-col justify-between gap-3 rounded-xl p-4 ${
+          isDark
+            ? "bg-white/[0.06] backdrop-blur-sm border border-white/[0.10]"
+            : "bg-muted/40 border border-border/60"
+        }`}
+      >
+        <div className="grid grid-cols-2 gap-2">
           <ResultCard
-            label="Airline charges"
+            label="Airline"
             value={airlineCharge}
-            sublabel={(() => {
-              const a = AIRLINES.find((x) => x.id === airlineId) ?? AIRLINES[0];
-              return `${formatINR(a.excessFee)}/kg over ${a.allowance} kg free`;
-            })()}
+            sublabel={`${formatINR(
+              (AIRLINES.find((x) => x.id === airlineId) ?? AIRLINES[0]).excessFee,
+            )}/kg`}
             muted
+            isDark={isDark}
           />
           <ResultCard
-            label="BagSafe charges"
+            label="BagSafe"
             value={ourCharge}
-            sublabel={`${formatINR(BAGSAFE_HANDLING_FEE)} + ${formatINR(
-              service === "surface" ? 150 : 250,
-            )}/kg`}
+            sublabel={`+${formatINR(BAGSAFE_HANDLING_FEE)} fee`}
             accent
+            isDark={isDark}
           />
         </div>
 
         <div
-          className={`rounded-2xl p-5 ${
-            isDark ? "bg-amber text-amber-foreground" : "bg-gradient-amber text-amber-foreground"
+          className={`rounded-xl p-3 ${
+            isDark
+              ? "bg-amber/20 border border-amber/30 text-ink-foreground"
+              : "bg-gradient-to-br from-amber/20 via-amber/10 to-amber/5 border border-amber/20 text-foreground"
           }`}
+          style={isDark ? { boxShadow: "0 0 24px -6px oklch(67% 0.2 281 / 25%)" } : {}}
         >
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
-            <TrendingDown className="h-3.5 w-3.5" />
+          <div
+            className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest ${
+              isDark ? "text-amber" : "text-amber"
+            }`}
+          >
+            <TrendingDown className="h-3 w-3" />
             You save
           </div>
-          <div className="mt-2 font-display text-4xl font-bold leading-none md:text-5xl">
-            {formatINR(savings)}
+          <div className="mt-1 font-display text-2xl font-bold leading-none md:text-3xl">
+            <AnimatedSavings value={savings} />
           </div>
-          <p className="mt-2 text-sm opacity-80">
-            on a {weight} kg {SERVICE_LABEL[service].toLowerCase()} booking
+          <p
+            className={`mt-1 text-[10px] ${isDark ? "text-ink-foreground/50" : "text-muted-foreground"}`}
+          >
+            {weight}kg {SERVICE_LABEL[service].toLowerCase()}
           </p>
         </div>
 
         <Button
           asChild
-          size="lg"
-          className="group rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+          size="sm"
+          className={`group rounded-full text-xs ${
+            isDark
+              ? "bg-amber text-amber-foreground hover:bg-amber/90"
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          }`}
         >
           <Link to="/book">
-            Book this pickup
-            <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            Book pickup
+            <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </Button>
       </div>
@@ -224,37 +267,43 @@ function ResultCard({
   sublabel,
   muted = false,
   accent = false,
+  isDark = false,
 }: {
   label: string;
   value: number;
   sublabel?: string;
   muted?: boolean;
   accent?: boolean;
+  isDark?: boolean;
 }) {
   return (
     <div
-      className={`rounded-xl px-4 py-4 ${
+      className={`rounded-lg px-2 py-2 ${
         accent
-          ? "bg-primary/10 border border-primary/20"
-          : "bg-muted/50 border border-border/60"
+          ? isDark
+            ? "bg-primary/15 border border-primary/25"
+            : "bg-primary/10 border border-primary/20"
+          : isDark
+            ? "bg-white/[0.05] border border-white/[0.10]"
+            : "bg-muted/50 border border-border/60"
       }`}
     >
       <div
-        className={`text-xs font-medium uppercase tracking-wider ${
-          muted ? "opacity-60" : "opacity-80"
+        className={`text-[9px] font-medium uppercase tracking-wider ${
+          muted ? "opacity-40" : "opacity-60"
         }`}
       >
         {label}
       </div>
       <div
-        className={`mt-1.5 font-display text-2xl font-semibold ${
-          muted ? "line-through opacity-60" : ""
+        className={`font-display text-sm font-semibold leading-none ${
+          muted ? "line-through opacity-40" : ""
         }`}
       >
         {formatINR(value)}
       </div>
       {sublabel && (
-        <div className="mt-1 text-[11px] opacity-60">{sublabel}</div>
+        <div className="mt-0.5 text-[9px] opacity-40">{sublabel}</div>
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -101,7 +102,7 @@ function AdminPage() {
 
         <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
           {busy ? (
-            <p className="p-8 text-center text-sm text-muted-foreground">Loading...</p>
+            <LoadingScreen variant="both" showText />
           ) : (
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">

@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export const Route = createFileRoute("/vendor")({
   head: () => ({
@@ -134,7 +135,7 @@ function VendorPage() {
 
         <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
           {busy ? (
-            <p className="p-8 text-center text-sm text-muted-foreground">Loading...</p>
+            <LoadingScreen variant="both" showText />
           ) : filtered.length === 0 ? (
             <p className="p-8 text-center text-sm text-muted-foreground">No orders match this filter.</p>
           ) : (

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { TypeWriter } from "@/components/ui/TypeWriter";
 import { ArrowRight, ShieldCheck, Clock, MapPin, Sparkles, Hand } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { useAuth } from "@/lib/auth";
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/accordion";
 import { whatsappLink } from "@/lib/contact";
 
-import heroImg from "@/assets/hero-airplane.jpg";
 import travelerImg from "@/assets/traveler-window.jpg";
 import vanImg from "@/assets/delivery-van.jpg";
 
@@ -35,6 +35,9 @@ export const Route = createFileRoute("/")({
         content:
           "Doorstep luggage pickup & delivery. Save up to 70% on airline excess baggage fees with BagSafe.",
       },
+    ],
+    links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
     ],
   }),
   component: HomePage,
@@ -65,7 +68,7 @@ function WelcomeGreeting() {
   const firstName = rawName.split(" ")[0];
 
   return (
-    <div className="mb-6 flex max-w-full items-start gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-md sm:inline-flex sm:items-center sm:rounded-full sm:px-5">
+    <div className="mb-6 inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-md sm:rounded-full sm:px-5">
       <Hand className="mt-0.5 h-4 w-4 shrink-0 text-primary sm:mt-0" />
       <p className="text-sm font-medium leading-snug text-ink-foreground sm:text-base">
         Welcome back, <span className="font-semibold text-primary">{firstName}</span> — your bags, our mission.
@@ -78,36 +81,38 @@ function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-ink text-ink-foreground">
       <div className="absolute inset-0">
-        <img
-          src={heroImg}
-          alt="Airplane on a runway at sunset"
-          width={1920}
-          height={1280}
-          className="h-full w-full object-cover opacity-40"
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          volume="0"
+          src="/hero-bg.mp4"
+          className="h-full w-full object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/88 via-ink/72 to-ink" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/72 to-primary/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/50 to-ink/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/60 via-ink/40 to-primary/15" />
       </div>
 
-      <div className="container-page relative pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
-        <div className="max-w-3xl animate-rise">
+      <div className="container-page relative flex min-h-[90vh] flex-col items-center justify-center pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
+        <div className="max-w-3xl animate-rise text-center">
           <WelcomeGreeting />
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
             <Sparkles className="h-3.5 w-3.5" />
-            Excess baggage, zero stress
+            <TypeWriter text="Excess baggage, zero stress" speed={40} />
           </span>
-          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+          <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.02] drop-shadow-lg sm:text-5xl md:text-6xl lg:text-7xl">
             Travel light.
             <br />
-            <span className="text-primary">Save big</span> on excess baggage.
+            <span className="text-primary drop-shadow-lg">Save big</span> on excess baggage.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-foreground/78 md:text-xl">
+          <p className="mt-6 max-w-xl mx-auto text-lg leading-relaxed text-ink-foreground/78 drop-shadow-md md:text-xl">
             BagSafe picks up your overweight luggage from your doorstep, ships it
             ahead of you, and delivers it to your destination — for a fraction of
             airline excess fees.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Button
               asChild
               size="lg"
@@ -127,18 +132,10 @@ function Hero() {
               <Link to="/pricing">See Pricing</Link>
             </Button>
           </div>
+        </div>
 
-          <dl className="mt-12 grid max-w-xl grid-cols-3 gap-6 border-t border-white/10 pt-8">
-            <Stat label="Travelers served">
-              <AnimatedCounter end={42000} suffix="+" />
-            </Stat>
-            <Stat label="₹ saved (Cr)">
-              <AnimatedCounter end={4.2} suffix="" format={(n) => n.toFixed(1)} />
-            </Stat>
-            <Stat label="Cities covered">
-              <AnimatedCounter end={120} suffix="+" />
-            </Stat>
-          </dl>
+        <div className="mt-16 w-full">
+          <SavingsCalculator variant="dark" />
         </div>
       </div>
     </section>
@@ -264,10 +261,35 @@ function HowItWorks() {
 }
 
 function CalculatorSection() {
+  const stats = [
+    { label: "Travelers served", end: 42000, suffix: "+" },
+    { label: "₹ saved (Cr)", end: 4.2, suffix: "", format: (n: number) => n.toFixed(1) },
+    { label: "Cities covered", end: 120, suffix: "+" },
+  ];
+
   return (
     <section className="bg-background py-20 md:py-28">
       <div className="container-page">
-        <SavingsCalculator />
+        <div className="mx-auto max-w-3xl">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            Trusted by travelers
+          </p>
+          <h2 className="mt-3 text-center font-display text-4xl font-semibold leading-tight md:text-5xl">
+            Numbers that speak<br />for themselves
+          </h2>
+          <div className="mt-12 rounded-3xl border border-border bg-card p-8 text-center shadow-elegant md:p-12">
+            <dl className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
+              {stats.map(({ label, end, suffix, format }) => (
+                <div key={label} className="text-center">
+                  <dd className="font-display text-2xl font-semibold text-primary md:text-4xl lg:text-5xl">
+                    <AnimatedCounter end={end} suffix={suffix} format={format} />
+                  </dd>
+                  <dt className="mt-1 text-sm text-muted-foreground">{label}</dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
       </div>
     </section>
   );

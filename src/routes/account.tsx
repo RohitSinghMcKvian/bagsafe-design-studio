@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -105,7 +106,7 @@ function AccountPage() {
           <div className="lg:col-span-2">
             <h2 className="font-display text-2xl font-semibold">Active shipment</h2>
             {busy ? (
-              <p className="mt-4 text-sm text-muted-foreground">Loading...</p>
+              <LoadingScreen variant="both" showText />
             ) : active.length === 0 ? (
               <div className="mt-4 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
                 <p className="text-sm text-muted-foreground">No active shipments right now.</p>
